@@ -4,10 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.lokaal.domain.repository.AuthRepository
 import com.example.lokaal.utils.toAuthMessage
+import com.example.lokaal.utils.validateConfirmPassword
 import com.example.lokaal.utils.validateEmail
 import com.example.lokaal.utils.validatePassword
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -16,61 +18,48 @@ import javax.inject.Inject
 class AuthViewModel @Inject constructor(
     private val repository: AuthRepository
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow<AuthUiState>(AuthUiState.Idle)
+    private val _signInState = MutableStateFlow<AuthUiState>(AuthUiState.Idle)
+    val signInState: StateFlow<AuthUiState> = _signInState.asStateFlow()
 
-    val uiState = _uiState.asStateFlow()
+    private val _signUpState = MutableStateFlow<AuthUiState>(AuthUiState.Idle)
+    val signUpState: StateFlow<AuthUiState> = _signUpState.asStateFlow()
+
+    val currentUser = repository.getCurrentUser()
 
     fun signIn(email: String, password: String) {
 
         val emailError = validateEmail(email)
-        if (emailError != null) {
-            _uiState.value = AuthUiState.Error(emailError)
-            return
-        }
-
+        if (emailError != null) { _signInState.value = AuthUiState.Error(emailError); return }
         val passwordError = validatePassword(password)
-        if (passwordError != null) {
-            _uiState.value = AuthUiState.Error(passwordError)
-            return
-        }
+        if (passwordError != null) { _signInState.value = AuthUiState.Error(passwordError); return }
 
         viewModelScope.launch {
-            _uiState.value = AuthUiState.Loading
-
-            repository.signIn(email, password)
-                .onSuccess { user ->
-                    _uiState.value = AuthUiState.Success(user)
-                }
-                .onFailure { exception ->
-                    _uiState.value = AuthUiState.Error(exception.toAuthMessage())
-                }
+            _signInState.value = AuthUiState.Loading
+            val result = repository.signIn(email, password)
+            _signInState.value = result.fold(
+                onSuccess = { AuthUiState.Success },
+                onFailure = { AuthUiState.Error(it.toAuthMessage()) }
+            )
         }
     }
 
-    fun signUp(email: String, password: String) {
-
+    fun signUp(email: String, password: String, confirm: String) {
         val emailError = validateEmail(email)
-        if (emailError != null) {
-            _uiState.value = AuthUiState.Error(emailError)
-            return
-        }
-
+        if (emailError != null) { _signUpState.value = AuthUiState.Error(emailError); return }
         val passwordError = validatePassword(password)
-        if (passwordError != null) {
-            _uiState.value = AuthUiState.Error(passwordError)
-            return
-        }
+        if (passwordError != null) { _signUpState.value = AuthUiState.Error(passwordError); return }
+        val confirmError = validateConfirmPassword(password, confirm)
+        if (confirmError != null) { _signUpState.value = AuthUiState.Error(confirmError); return }
 
         viewModelScope.launch {
-            _uiState.value = AuthUiState.Loading
-
-            repository.signUp(email, password)
-                .onSuccess { user ->
-                    _uiState.value = AuthUiState.Success(user)
-                }
-                .onFailure { exception ->
-                    _uiState.value = AuthUiState.Error(exception.toAuthMessage())
-                }
+            _signUpState.value = AuthUiState.Loading
+            val result = repository.signUp(email, password)
+            _signUpState.value = result.fold(
+                onSuccess = { AuthUiState.Success },
+                onFailure = { AuthUiState.Error(it.toAuthMessage()) }
+            )
         }
     }
+    fun resetSignInState() { _signInState.value = AuthUiState.Idle }
+    fun resetSignUpState() { _signUpState.value = AuthUiState.Idle }
 }

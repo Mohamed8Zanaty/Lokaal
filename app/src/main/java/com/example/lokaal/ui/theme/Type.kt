@@ -6,29 +6,30 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
-// Set of Material typography styles to start with
 val Typography = Typography(
-    bodyLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
-    )
-    /* Other default text styles to override
+    // Screen titles in top bar
     titleLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 22.sp,
-        lineHeight = 28.sp,
-        letterSpacing = 0.sp
-    ),
-    labelSmall = TextStyle(
-        fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Medium,
-        fontSize = 11.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.5.sp
+        fontSize = 16.sp
+    ),
+    // Section headers
+    titleMedium = TextStyle(
+        fontWeight = FontWeight.Medium,
+        fontSize = 14.sp
+    ),
+    // Body text
+    bodyMedium = TextStyle(
+        fontWeight = FontWeight.Normal,
+        fontSize = 12.sp
+    ),
+    // Captions (date, category label)
+    labelSmall = TextStyle(
+        fontWeight = FontWeight.Normal,
+        fontSize = 10.sp
+    ),
+    // Big amount number
+    displaySmall = TextStyle(
+        fontWeight = FontWeight.Medium,
+        fontSize = 22.sp
     )
-    */
 )

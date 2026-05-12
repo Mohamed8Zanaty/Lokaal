@@ -18,3 +18,9 @@ fun validatePassword(password: String): String? {
         else -> null
     }
 }
+
+fun validateConfirmPassword(password: String, confirm: String): String? {
+    if (confirm.isBlank()) return "Please confirm your password"
+    if (confirm != password) return "Passwords don't match"
+    return null
+}
