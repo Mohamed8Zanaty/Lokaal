@@ -1,15 +1,18 @@
 package com.example.lokaal.data.repository
 
+import android.net.Uri
 import com.example.lokaal.domain.model.Moment
 import com.example.lokaal.domain.repository.MomentRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class MomentRepositoryImpl @Inject constructor(
     private val auth: FirebaseAuth,
-    private val store: FirebaseFirestore
+    private val store: FirebaseFirestore,
+    private val storage: FirebaseStorage
 ) : MomentRepository {
     override suspend fun getMoments(): Result<List<Moment>> {
         return try {
@@ -58,6 +61,21 @@ class MomentRepositoryImpl @Inject constructor(
                     it.toObject(Moment::class.java)
                 }
             Result.success(moments)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun uploadPhoto(uri: Uri): Result<String> {
+        return try {
+            val userId= auth.currentUser?.uid ?: return Result.failure(Exception("Not signed in"))
+            val ref = storage.reference
+                .child("moments")
+                .child(userId)
+                .child("${System.currentTimeMillis()}.jpg")
+            ref.putFile(uri).await()
+            val downloadUrl = ref.downloadUrl.await()
+            Result.success(downloadUrl.toString())
         } catch (e: Exception) {
             Result.failure(e)
         }

@@ -12,6 +12,7 @@ composeBom = "2026.05.00"
 googleServices = "4.4.4"
 firebaseBom = "34.13.0"
 
+
 hilt = "2.59.2"
 hilt-compose = "1.3.0"
 ksp = "2.3.6"
@@ -29,6 +30,7 @@ camerax = "1.6.1"
 accompanist = "0.37.3"
 
 gms = "21.3.0"
+coil = "2.7.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -68,7 +70,8 @@ camerax-view = { module = "androidx.camera:camera-view", version.ref = "camerax"
 camerax-core = { module = "androidx.camera:camera-core", version.ref = "camerax" }
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "gms"}
-
+coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
+firebase-storage = { module = "com.google.firebase:firebase-storage" }
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

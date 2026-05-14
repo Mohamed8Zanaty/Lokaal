@@ -60,6 +60,7 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
+    implementation(libs.firebase.storage)
 
     // DI (hilt)
     implementation(libs.hilt.android)
@@ -89,4 +90,8 @@ dependencies {
 
     // Gms
     implementation(libs.play.services.location)
+
+    // Coil
+    implementation(libs.coil.compose)
+
 }
