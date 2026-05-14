@@ -80,9 +80,13 @@ dependencies {
     implementation(libs.material3.adaptive.nav3)
     implementation(libs.kotlinx.serialization.core)
 
+    // Camera
     implementation(libs.camerax.camera2)
     implementation(libs.camerax.lifecycle)
     implementation(libs.camerax.view)
     implementation(libs.camerax.core)
     implementation(libs.accompanist.permissions)
+
+    // Gms
+    implementation(libs.play.services.location)
 }
