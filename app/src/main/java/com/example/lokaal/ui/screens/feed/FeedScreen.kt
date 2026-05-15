@@ -15,8 +15,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
+import com.example.lokaal.domain.model.Moment
 import com.example.lokaal.ui.screens.feed.components.EmptyFeed
 import com.example.lokaal.ui.screens.feed.components.ErrorItem
 import com.example.lokaal.ui.screens.feed.components.FeedTopBar
@@ -24,9 +26,10 @@ import com.example.lokaal.ui.screens.feed.components.LoadingFooter
 import com.example.lokaal.ui.screens.feed.components.MomentCard
 
 @Composable
-fun FeedScreen(modifier: Modifier = Modifier) {
-    val viewModel = hiltViewModel<FeedViewModel>()
-    val moments = viewModel.moments.collectAsLazyPagingItems()
+fun FeedScreen(
+    moments: LazyPagingItems<Moment>,
+    modifier: Modifier = Modifier
+) {
 
     Column(
         modifier = modifier

@@ -24,4 +24,10 @@ class Navigator(val state: NavigationState) {
             currentBackStack.removeLastOrNull()
         }
     }
+    fun popToRoot(topLevelRoute: NavKey) {
+
+        state.backStacks[state.topLevelRoute]?.clear()
+        state.backStacks[state.topLevelRoute]?.add(state.topLevelRoute)
+        state.topLevelRoute = topLevelRoute
+    }
 }

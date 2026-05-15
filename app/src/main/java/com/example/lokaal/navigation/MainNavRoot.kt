@@ -13,8 +13,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.lokaal.R
 import com.example.lokaal.ui.auth.AuthViewModel
 import com.example.lokaal.ui.screens.camera.CameraScreen
@@ -22,6 +24,7 @@ import com.example.lokaal.ui.screens.createmoment.CreateMomentScreen
 import com.example.lokaal.ui.screens.feed.FeedScreen
 import com.example.lokaal.ui.screens.MapScreen
 import com.example.lokaal.ui.screens.ProfileScreen
+import com.example.lokaal.ui.screens.feed.FeedViewModel
 
 @Composable
 fun MainNavRoot(
@@ -74,7 +77,11 @@ fun MainNavRoot(
             entries = navigationState.toEntries(
                 entryProvider {
                     entry<Route.Feed> {
-                        FeedScreen()
+                        val viewModel = hiltViewModel<FeedViewModel>()
+                        val moments = viewModel.moments.collectAsLazyPagingItems()
+                        FeedScreen(
+                            moments = moments
+                        )
                     }
                     entry<Route.Map> {
                         MapScreen()
@@ -85,14 +92,14 @@ fun MainNavRoot(
                     entry<Route.Camera> {
                         CameraScreen(
                             onPhotoCaptured = { photoBase64 ->
-                                navigator.navigate(Route.CreateMoment(photoBase64.toString()))
+                                navigator.navigate(Route.CreateMoment(photoBase64))
                             }
                         )
                     }
                     entry<Route.CreateMoment> { (photoBase64) ->
                         CreateMomentScreen(
                             photoBase64 = photoBase64,
-                            onPostSuccess = { navigator.navigate(Route.Feed) }
+                            onPostSuccess = { navigator.popToRoot(Route.Feed) }
                         )
                     }
                 }

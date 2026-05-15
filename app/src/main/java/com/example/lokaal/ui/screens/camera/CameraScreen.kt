@@ -36,7 +36,7 @@ import com.example.lokaal.ui.theme.LokaalTheme
 
 @Composable
 fun CameraScreen(
-    onPhotoCaptured: (Uri) -> Unit,
+    onPhotoCaptured: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -51,8 +51,8 @@ fun CameraScreen(
 
     LaunchedEffect(uiState) {
         if(uiState is CameraUiState.PhotoCaptured) {
-            val photoUri = (uiState as CameraUiState.PhotoCaptured).uri
-            onPhotoCaptured(photoUri)
+            val photoBase64 = (uiState as CameraUiState.PhotoCaptured).photoBase64
+            onPhotoCaptured(photoBase64)
         }
     }
 

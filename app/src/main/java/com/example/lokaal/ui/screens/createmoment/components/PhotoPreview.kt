@@ -26,6 +26,21 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.lokaal.R
 import com.example.lokaal.ui.theme.LokaalTheme
+import android.graphics.BitmapFactory
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 @Composable
 fun PhotoPreview(
@@ -33,6 +48,34 @@ fun PhotoPreview(
     locationName: String,
     modifier: Modifier = Modifier
 ) {
+    var imageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
+    var isLoading by remember { mutableStateOf(true) }
+    var error by remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(photoBase64) {
+        if (photoBase64.isBlank()) {
+            isLoading = false
+            error = "No image data"
+            return@LaunchedEffect
+        }
+        withContext(Dispatchers.IO) {
+            try {
+                val bytes = android.util.Base64.decode(photoBase64, android.util.Base64.DEFAULT)
+                val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                withContext(Dispatchers.Main) {
+                    imageBitmap = bitmap?.asImageBitmap()
+                    isLoading = false
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                withContext(Dispatchers.Main) {
+                    error = "Failed to load"
+                    isLoading = false
+                }
+            }
+        }
+    }
+
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -40,12 +83,26 @@ fun PhotoPreview(
             .padding(horizontal = 12.dp)
             .clip(RoundedCornerShape(14.dp))
     ) {
-        AsyncImage(
-            model = "data:image/jpeg;base64,${photoBase64}",
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
-        )
+        when {
+            isLoading -> {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            }
+            imageBitmap != null -> {
+                Image(
+                    bitmap = imageBitmap!!,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+            else -> {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(error ?: "Failed to load image")
+                }
+            }
+        }
         // Location badge
         Row(
             modifier = Modifier
@@ -71,7 +128,7 @@ fun PhotoPreview(
                 color = Color.White
             )
         }
-    } 
+    }
 }
 
 @Preview(showBackground = true)

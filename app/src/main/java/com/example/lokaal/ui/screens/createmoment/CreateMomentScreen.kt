@@ -32,13 +32,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.lokaal.R
 import com.example.lokaal.ui.screens.createmoment.components.LocationCard
 import com.example.lokaal.ui.screens.createmoment.components.PhotoPreview
 import com.example.lokaal.ui.screens.createmoment.components.PostButton
 import androidx.core.net.toUri
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
 @Composable
 fun CreateMomentScreen(
@@ -49,11 +49,10 @@ fun CreateMomentScreen(
     val context = LocalContext.current
     val viewModel = hiltViewModel<CreateMomentViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val parsedUri = remember { photoBase64.toUri() }
 
-//    LaunchedEffect(Unit) {
-//        viewModel.fetchLocation(context)
-//    }
+    LaunchedEffect(Unit) {
+        viewModel.fetchLocation(context)
+    }
 
     LaunchedEffect(uiState.isSuccess) {
         if (uiState.isSuccess) onPostSuccess()
@@ -148,7 +147,7 @@ fun CreateMomentScreen(
             
             PostButton(
                 isLoading = uiState.isLoading,
-                onClick = { viewModel.postMoment(context, parsedUri) },
+                onClick = { viewModel.postMoment(context, photoBase64) },
                 modifier = Modifier.padding(horizontal = 12.dp)
             )
         }

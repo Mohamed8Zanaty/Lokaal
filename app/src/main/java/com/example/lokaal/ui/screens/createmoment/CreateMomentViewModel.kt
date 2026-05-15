@@ -76,7 +76,7 @@ class CreateMomentViewModel @Inject constructor(
         }
     }
 
-    fun postMoment(context: Context, photoUri: Uri) {
+    fun postMoment(context: Context, photoBase64: String) {
         val caption = _uiState.value.caption.trim()
         if (caption.isBlank()) {
             _uiState.update { it.copy(error = "Please add a caption") }
@@ -86,24 +86,13 @@ class CreateMomentViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
 
-            // Convert photo to Base64 on IO thread
-            val base64Result = withContext(Dispatchers.IO) {
-                repo.photoToBase64(context, photoUri)
-            }
-
-            if (base64Result.isFailure) {
-                _uiState.update {
-                    it.copy(isLoading = false, error = "Failed to process photo")
-                }
-                return@launch
-            }
 
             val user = auth.currentUser
             val moment = Moment(
                 userId = user?.uid ?: "",
                 authorName = user?.displayName ?: user?.email ?: "Anonymous",
                 caption = caption,
-                photoBase64 = base64Result.getOrThrow(),   // ← was photoUrl
+                photoBase64 = photoBase64,   // ← was photoUrl
                 latitude = _uiState.value.latitude,
                 longitude = _uiState.value.longitude,
                 locationName = _uiState.value.locationName,
