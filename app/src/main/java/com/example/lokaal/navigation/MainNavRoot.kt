@@ -88,9 +88,7 @@ fun MainNavRoot(
                     }
                     entry<Route.Profile> {
                         ProfileScreen(
-                            onSignOut = {
-                                navigator.navigate(Route.SignIn)
-                            }
+                            onSignOut = onSignOut
                         )
                     }
                     entry<Route.Camera> {
