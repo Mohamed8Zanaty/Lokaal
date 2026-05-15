@@ -50,21 +50,17 @@ class MomentRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getUserMoments(userId: String): Result<List<Moment>> {
+    override suspend fun getUserMoments(userId: String): List<Moment> {
         return try {
-            val moments = store
-                .collection("moments")
+            store.collection("moments")
                 .whereEqualTo("userId", userId)
-                .orderBy("timestamp")
+                .orderBy("timestamp", Query.Direction.DESCENDING)
                 .get()
                 .await()
                 .documents
-                .mapNotNull {
-                    it.toObject(Moment::class.java)
-                }
-            Result.success(moments)
+                .mapNotNull { it.toObject(Moment::class.java) }
         } catch (e: Exception) {
-            Result.failure(e)
+            emptyList()
         }
     }
 

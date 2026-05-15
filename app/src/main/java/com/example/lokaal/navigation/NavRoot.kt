@@ -10,8 +10,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.lokaal.ui.auth.AuthUiState
-import com.example.lokaal.ui.auth.AuthViewModel
+import com.example.lokaal.ui.screens.auth.AuthUiState
+import com.example.lokaal.ui.screens.auth.AuthViewModel
 
 @Composable
 fun NavRoot(

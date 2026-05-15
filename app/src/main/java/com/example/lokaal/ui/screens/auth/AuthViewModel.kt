@@ -1,4 +1,4 @@
-package com.example.lokaal.ui.auth
+package com.example.lokaal.ui.screens.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

@@ -1,4 +1,4 @@
-package com.example.lokaal.ui.auth
+package com.example.lokaal.ui.screens.auth
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -34,21 +34,20 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.lokaal.ui.auth.components.AuthBackground
-import com.example.lokaal.ui.auth.components.AuthLogo
-import com.example.lokaal.ui.auth.components.AuthTextField
+import com.example.lokaal.ui.screens.auth.components.AuthBackground
+import com.example.lokaal.ui.screens.auth.components.AuthLogo
+import com.example.lokaal.ui.screens.auth.components.AuthTextField
 import com.example.lokaal.ui.theme.LokaalTheme
 
 @Composable
-fun SignUpScreen(
+fun SignInScreen(
     state: AuthUiState,
-    onSignUp: (email: String, password: String, confirm: String) -> Unit,
-    onNavigateToSignIn: () -> Unit,
+    onSignIn: (email: String, password: String) -> Unit,
+    onNavigateToSignUp: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var confirm by remember { mutableStateOf("") }
 
     AuthBackground {
         Column(
@@ -58,8 +57,8 @@ fun SignUpScreen(
         ) {
             Spacer(modifier = Modifier.height(32.dp))
             AuthLogo(
-                title = "Create account",
-                subtitle = "Join your local community",
+                title = "Lokaal",
+                subtitle = "Discover moments near you",
                 modifier = Modifier.padding(horizontal = 20.dp)
             )
             Spacer(modifier = Modifier.height(24.dp))
@@ -82,23 +81,15 @@ fun SignUpScreen(
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Email,
                         imeAction = ImeAction.Next
-                    )
+                    ),
+                    errorMessage = if (state is AuthUiState.Error &&
+                        state.message.contains("email", ignoreCase = true))
+                        state.message else null
                 )
                 AuthTextField(
                     value = password,
                     onValueChange = { password = it },
                     label = "Password",
-                    placeholder = "Min. 6 characters",
-                    isPassword = true,
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Password,
-                        imeAction = ImeAction.Next
-                    )
-                )
-                AuthTextField(
-                    value = confirm,
-                    onValueChange = { confirm = it },
-                    label = "Confirm password",
                     placeholder = "••••••••",
                     isPassword = true,
                     keyboardOptions = KeyboardOptions(
@@ -106,11 +97,12 @@ fun SignUpScreen(
                         imeAction = ImeAction.Done
                     ),
                     errorMessage = if (state is AuthUiState.Error &&
-                        state.message.contains("match", ignoreCase = true))
+                        state.message.contains("password", ignoreCase = true))
                         state.message else null
                 )
                 if (state is AuthUiState.Error &&
-                    !state.message.contains("match", ignoreCase = true)
+                    !state.message.contains("email", ignoreCase = true) &&
+                    !state.message.contains("password", ignoreCase = true)
                 ) {
                     Text(
                         text = state.message,
@@ -119,7 +111,7 @@ fun SignUpScreen(
                     )
                 }
                 Button(
-                    onClick = { onSignUp(email, password, confirm) },
+                    onClick = { onSignIn(email, password) },
                     enabled = state !is AuthUiState.Loading,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -136,7 +128,7 @@ fun SignUpScreen(
                             strokeWidth = 2.dp
                         )
                     } else {
-                        Text("Create account")
+                        Text("Sign in")
                     }
                 }
                 Row(
@@ -144,17 +136,17 @@ fun SignUpScreen(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = "Already have an account? ",
+                        text = "Don't have an account? ",
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
-                        text = "Sign in",
+                        text = "Sign up",
                         style = MaterialTheme.typography.labelSmall.copy(
                             fontWeight = FontWeight.Medium
                         ),
                         color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.clickable { onNavigateToSignIn() }
+                        modifier = Modifier.clickable { onNavigateToSignUp() }
                     )
                 }
             }
@@ -164,36 +156,36 @@ fun SignUpScreen(
 
 @Preview(showBackground = true)
 @Composable
-private fun SignUpScreenIdlePreview() {
+private fun SignInScreenIdlePreview() {
     LokaalTheme {
-        SignUpScreen(
+        SignInScreen(
             state = AuthUiState.Idle,
-            onSignUp = { _, _, _ -> },
-            onNavigateToSignIn = {}
+            onSignIn = { _, _ -> },
+            onNavigateToSignUp = {}
         )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-private fun SignUpScreenLoadingPreview() {
+private fun SignInScreenLoadingPreview() {
     LokaalTheme {
-        SignUpScreen(
+        SignInScreen(
             state = AuthUiState.Loading,
-            onSignUp = { _, _, _ -> },
-            onNavigateToSignIn = {}
+            onSignIn = { _, _ -> },
+            onNavigateToSignUp = {}
         )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-private fun SignUpScreenErrorPreview() {
+private fun SignInScreenErrorPreview() {
     LokaalTheme {
-        SignUpScreen(
-            state = AuthUiState.Error("Passwords do not match"),
-            onSignUp = { _, _, _ -> },
-            onNavigateToSignIn = {}
+        SignInScreen(
+            state = AuthUiState.Error("Invalid email or password"),
+            onSignIn = { _, _ -> },
+            onNavigateToSignUp = {}
         )
     }
 }

@@ -1,6 +1,7 @@
 package com.example.lokaal.ui.screens.map.components
 
 import android.graphics.BitmapFactory
+import android.util.Base64
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -56,7 +57,7 @@ fun MomentPreviewCard(
         if (moment.photoBase64.isNotBlank()) {
             withContext(Dispatchers.IO) {
                 try {
-                    val bytes = android.util.Base64.decode(moment.photoBase64, android.util.Base64.DEFAULT)
+                    val bytes = Base64.decode(moment.photoBase64, Base64.DEFAULT)
                     val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
                     withContext(Dispatchers.Main) {
                         imageBitmap = bitmap?.asImageBitmap()

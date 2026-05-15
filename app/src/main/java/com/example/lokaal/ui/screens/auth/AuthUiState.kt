@@ -1,4 +1,4 @@
-package com.example.lokaal.ui.auth
+package com.example.lokaal.ui.screens.auth
 
 import com.google.firebase.auth.FirebaseUser
 

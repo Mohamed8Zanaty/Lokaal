@@ -6,10 +6,10 @@ import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
-import com.example.lokaal.ui.auth.AuthUiState
-import com.example.lokaal.ui.auth.AuthViewModel
-import com.example.lokaal.ui.auth.SignInScreen
-import com.example.lokaal.ui.auth.SignUpScreen
+import com.example.lokaal.ui.screens.auth.AuthUiState
+import com.example.lokaal.ui.screens.auth.AuthViewModel
+import com.example.lokaal.ui.screens.auth.SignInScreen
+import com.example.lokaal.ui.screens.auth.SignUpScreen
 
 @Composable
 fun AuthNavRoot(

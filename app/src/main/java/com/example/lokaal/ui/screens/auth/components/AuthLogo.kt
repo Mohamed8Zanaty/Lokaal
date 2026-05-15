@@ -1,4 +1,4 @@
-package com.example.lokaal.ui.auth.components
+package com.example.lokaal.ui.screens.auth.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

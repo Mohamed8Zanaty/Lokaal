@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 interface MomentRepository {
     fun getMoments(): Flow<PagingData<Moment>>
     suspend fun createMoment(moment: Moment): Result<Unit>
-    suspend fun getUserMoments(userId: String): Result<List<Moment>>
+    suspend fun getUserMoments(userId: String): List<Moment>
     fun photoToBase64(context: Context, uri: Uri): Result<String>
     suspend fun getAllMoments(): List<Moment>
 }
