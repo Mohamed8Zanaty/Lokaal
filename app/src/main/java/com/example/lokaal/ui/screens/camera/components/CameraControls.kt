@@ -28,7 +28,8 @@ fun CameraControls(
     onCapture: () -> Unit,
     onGallery: () -> Unit,
     onFlipCamera: () -> Unit,
-    isCapturing: Boolean = false
+    isCapturing: Boolean = false,
+    isReady: Boolean = false,
 ) {
     Row(
         modifier = modifier
@@ -39,7 +40,7 @@ fun CameraControls(
     ) {
         IconButton(
             onClick = onGallery,
-            enabled = !isCapturing,
+            enabled = isReady,
             modifier = Modifier
                 .size(36.dp)
                 .background(
@@ -56,7 +57,7 @@ fun CameraControls(
         }
         IconButton(
             onClick = onCapture,
-            enabled = !isCapturing,
+            enabled = isReady && !isCapturing,
             modifier = Modifier
                 .size(56.dp)
                 .background(
@@ -69,7 +70,7 @@ fun CameraControls(
                     shape = CircleShape
                 )
         ) {
-            if (isCapturing) {
+            if (isCapturing || !isReady) {
                 CircularProgressIndicator(
                     modifier = Modifier.size(24.dp),
                     color = MaterialTheme.colorScheme.primary,
@@ -87,7 +88,7 @@ fun CameraControls(
 
         IconButton(
             onClick = onFlipCamera,
-            enabled = !isCapturing,
+            enabled = isReady,
             modifier = Modifier
                 .size(36.dp)
                 .background(

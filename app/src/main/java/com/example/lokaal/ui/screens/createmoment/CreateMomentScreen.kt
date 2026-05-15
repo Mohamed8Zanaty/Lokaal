@@ -42,18 +42,18 @@ import androidx.core.net.toUri
 
 @Composable
 fun CreateMomentScreen(
-    photoUri: String,
+    photoBase64: String,
     onPostSuccess: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
     val viewModel = hiltViewModel<CreateMomentViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val parsedUri = remember { photoUri.toUri() }
+    val parsedUri = remember { photoBase64.toUri() }
 
-    LaunchedEffect(Unit) {
-        viewModel.fetchLocation(context)
-    }
+//    LaunchedEffect(Unit) {
+//        viewModel.fetchLocation(context)
+//    }
 
     LaunchedEffect(uiState.isSuccess) {
         if (uiState.isSuccess) onPostSuccess()
@@ -96,7 +96,7 @@ fun CreateMomentScreen(
         ) {
             
             PhotoPreview(
-                photoUri = parsedUri,
+                photoBase64 = photoBase64,
                 locationName = uiState.locationName
             )
 

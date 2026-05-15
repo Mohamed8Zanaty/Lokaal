@@ -5,7 +5,7 @@ data class Moment(
     val userId: String = "",
     val authorName: String = "",
     val caption: String = "",
-    val photoUrl: String = "",
+    val photoBase64: String = "",
     val latitude: Double = 0.0,
     val longitude: Double = 0.0,
     val locationName: String = "",

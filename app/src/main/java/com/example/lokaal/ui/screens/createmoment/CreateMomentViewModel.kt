@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Locale
 import javax.inject.Inject
 
@@ -85,25 +86,24 @@ class CreateMomentViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
 
-            val uploadResult = repo.uploadPhoto(photoUri)
-            if (uploadResult.isFailure) {
+            // Convert photo to Base64 on IO thread
+            val base64Result = withContext(Dispatchers.IO) {
+                repo.photoToBase64(context, photoUri)
+            }
+
+            if (base64Result.isFailure) {
                 _uiState.update {
-                    it.copy(
-                        isLoading = false,
-                        error = "Failed to upload photo. Try again."
-                    )
+                    it.copy(isLoading = false, error = "Failed to process photo")
                 }
                 return@launch
             }
 
-            val photoUrl = uploadResult.getOrThrow()
             val user = auth.currentUser
-
             val moment = Moment(
                 userId = user?.uid ?: "",
                 authorName = user?.displayName ?: user?.email ?: "Anonymous",
                 caption = caption,
-                photoUrl = photoUrl,
+                photoBase64 = base64Result.getOrThrow(),   // ← was photoUrl
                 latitude = _uiState.value.latitude,
                 longitude = _uiState.value.longitude,
                 locationName = _uiState.value.locationName,
@@ -112,14 +112,8 @@ class CreateMomentViewModel @Inject constructor(
 
             val result = repo.createMoment(moment)
             _uiState.update {
-                if (result.isSuccess) {
-                    it.copy(isLoading = false, isSuccess = true)
-                } else {
-                    it.copy(
-                        isLoading = false,
-                        error = "Failed to post moment. Try again."
-                    )
-                }
+                if (result.isSuccess) it.copy(isLoading = false, isSuccess = true)
+                else it.copy(isLoading = false, error = "Failed to post. Try again.")
             }
         }
     }

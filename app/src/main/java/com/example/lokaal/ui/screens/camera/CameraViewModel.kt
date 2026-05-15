@@ -32,19 +32,19 @@ class CameraViewModel @Inject constructor() : ViewModel() {
     val uiState: StateFlow<CameraUiState> = _uiState.asStateFlow()
 
     private var imageCapture: ImageCapture? = null
-    var cameraController: LifecycleCameraController? = null
+    private val _cameraController = MutableStateFlow<LifecycleCameraController?>(null)
+    val cameraController = _cameraController.asStateFlow()
 
     private val _locationName = MutableStateFlow("Locating...")  // ← add this
     val locationName: StateFlow<String> = _locationName.asStateFlow()
     fun initializeCamera(context: Context, lifecycleOwner: LifecycleOwner) {
         try {
-            cameraController = LifecycleCameraController(context).apply {
-                setEnabledUseCases(
-                    CameraController.IMAGE_CAPTURE or CameraController.VIDEO_CAPTURE
-                )
-                bindToLifecycle(lifecycleOwner)
+            val controller = LifecycleCameraController(context).apply {
+                setEnabledUseCases(CameraController.IMAGE_CAPTURE)
             }
-            _uiState.value = CameraUiState.Ready
+            controller.bindToLifecycle(lifecycleOwner)
+            _cameraController.value = controller
+            //fetchLocation(context)
         } catch (e: Exception) {
             _uiState.value = CameraUiState.Error("Failed to initialize camera: ${e.message}")
         }
@@ -55,27 +55,31 @@ class CameraViewModel @Inject constructor() : ViewModel() {
         onSuccess: (Uri) -> Unit,
         onError: (String) -> Unit
     ) {
+        val controller = _cameraController.value
+        if (controller == null) {
+            onError("Camera is not ready")
+            return
+        }
+
         _uiState.value = CameraUiState.CapturingPhoto
 
         val outputDirectory = context.cacheDir
-        val photoFile = File(
-            outputDirectory,
-            "Moment_${System.currentTimeMillis()}.jpg"
-        )
+        val photoFile = File(outputDirectory, "Moment_${System.currentTimeMillis()}.jpg")
         val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
-        cameraController?.takePicture(
+
+        controller.takePicture(
             outputOptions,
             ContextCompat.getMainExecutor(context),
             object : ImageCapture.OnImageSavedCallback {
-                override fun onImageSaved(p0: ImageCapture.OutputFileResults) {
-                    val photoUri = p0.savedUri ?: Uri.fromFile(photoFile)
+                override fun onImageSaved(result: ImageCapture.OutputFileResults) {
+                    val photoUri = result.savedUri ?: Uri.fromFile(photoFile)
                     _uiState.value = CameraUiState.PhotoCaptured(photoUri)
                     onSuccess(photoUri)
                 }
 
-                override fun onError(p0: ImageCaptureException) {
-                    _uiState.value = CameraUiState.Error("Failed to capture photo: ${p0.message}")
-                    onError(p0.message ?: "Unknown error")
+                override fun onError(exception: ImageCaptureException) {
+                    _uiState.value = CameraUiState.Error("Failed to capture photo: ${exception.message}")
+                    onError(exception.message ?: "Unknown error")
                 }
             }
         )

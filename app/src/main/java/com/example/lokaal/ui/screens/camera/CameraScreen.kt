@@ -16,6 +16,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,6 +31,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.lokaal.R
 import com.example.lokaal.ui.screens.camera.components.CameraControls
 import com.example.lokaal.ui.screens.camera.components.CameraCornerGuides
+import com.example.lokaal.ui.screens.camera.components.CameraPreview
 import com.example.lokaal.ui.theme.LokaalTheme
 
 @Composable
@@ -42,6 +44,7 @@ fun CameraScreen(
     val viewModel = hiltViewModel<CameraViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val locationName by viewModel.locationName.collectAsStateWithLifecycle()
+    val controller = viewModel.cameraController.collectAsState().value
     LaunchedEffect(Unit) {
         viewModel.initializeCamera(context, lifecycleOwner)
     }
@@ -58,6 +61,10 @@ fun CameraScreen(
             .fillMaxSize()
             .background(Color(0xFF1A1A2E))
     ) {
+        CameraPreview(
+            controller = controller,
+            modifier = Modifier.fillMaxSize()
+        )
         CameraCornerGuides()
 
         Box(
@@ -130,6 +137,7 @@ fun CameraScreen(
                     onGallery = { /* TODO Open gallery */ },
                     onFlipCamera = { /* TODO Flip camera */ },
                     isCapturing = uiState is CameraUiState.CapturingPhoto,
+                    isReady = uiState is CameraUiState.Ready,
                     modifier = Modifier.align(Alignment.BottomCenter)
                 )
             }
@@ -139,7 +147,7 @@ fun CameraScreen(
 
 @Preview
 @Composable
-private fun CameraPreview() {
+private fun CameraScreenPreview() {
     LokaalTheme {
         CameraScreen(
             onPhotoCaptured = {}

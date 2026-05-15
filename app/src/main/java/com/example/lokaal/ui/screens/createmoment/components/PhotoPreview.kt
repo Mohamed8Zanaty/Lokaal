@@ -29,7 +29,7 @@ import com.example.lokaal.ui.theme.LokaalTheme
 
 @Composable
 fun PhotoPreview(
-    photoUri: Uri,
+    photoBase64: String,
     locationName: String,
     modifier: Modifier = Modifier
 ) {
@@ -41,8 +41,8 @@ fun PhotoPreview(
             .clip(RoundedCornerShape(14.dp))
     ) {
         AsyncImage(
-            model = photoUri,
-            contentDescription = "Captured photo",
+            model = "data:image/jpeg;base64,${photoBase64}",
+            contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
         )
@@ -79,7 +79,7 @@ fun PhotoPreview(
 private fun PhotoPreviewPreview() {
     LokaalTheme {
         PhotoPreview(
-            photoUri = Uri.EMPTY,
+            photoBase64 = "",
             locationName = "Amsterdam, Netherlands"
         )
     }

@@ -81,7 +81,6 @@ val serializersConfig = SavedStateConfiguration {
     serializersModule = SerializersModule {
         polymorphic(NavKey::class) {
             subclass(Route.Feed::class, Route.Feed.serializer())
-            subclass(Route.Auth::class, Route.Auth.serializer())
             subclass(Route.SignIn::class, Route.SignIn.serializer())
             subclass(Route.SignUp::class, Route.SignUp.serializer())
             subclass(Route.Map::class, Route.Map.serializer())

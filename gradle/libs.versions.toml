@@ -31,6 +31,7 @@ accompanist = "0.37.3"
 
 gms = "21.3.0"
 coil = "2.7.0"
+paging = "3.5.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -71,7 +72,10 @@ camerax-core = { module = "androidx.camera:camera-core", version.ref = "camerax"
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist" }
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "gms"}
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
-firebase-storage = { module = "com.google.firebase:firebase-storage" }
+
+paging-runtime = { group = "androidx.paging", name = "paging-runtime", version.ref = "paging" }
+paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "paging" }
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

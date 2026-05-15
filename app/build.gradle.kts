@@ -60,7 +60,6 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
-    implementation(libs.firebase.storage)
 
     // DI (hilt)
     implementation(libs.hilt.android)
@@ -93,5 +92,9 @@ dependencies {
 
     // Coil
     implementation(libs.coil.compose)
+
+    // Paging
+    implementation(libs.paging.runtime)
+    implementation(libs.paging.compose)
 
 }
