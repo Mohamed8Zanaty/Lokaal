@@ -22,7 +22,7 @@ import com.example.lokaal.ui.auth.AuthViewModel
 import com.example.lokaal.ui.screens.camera.CameraScreen
 import com.example.lokaal.ui.screens.createmoment.CreateMomentScreen
 import com.example.lokaal.ui.screens.feed.FeedScreen
-import com.example.lokaal.ui.screens.MapScreen
+import com.example.lokaal.ui.screens.map.MapScreen
 import com.example.lokaal.ui.screens.ProfileScreen
 import com.example.lokaal.ui.screens.feed.FeedViewModel
 

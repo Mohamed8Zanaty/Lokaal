@@ -11,4 +11,5 @@ interface MomentRepository {
     suspend fun createMoment(moment: Moment): Result<Unit>
     suspend fun getUserMoments(userId: String): Result<List<Moment>>
     fun photoToBase64(context: Context, uri: Uri): Result<String>
+    suspend fun getAllMoments(): List<Moment>
 }

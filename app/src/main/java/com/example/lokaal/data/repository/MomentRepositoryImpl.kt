@@ -18,6 +18,7 @@ import androidx.core.graphics.scale
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import com.google.firebase.firestore.Query
 
 class MomentRepositoryImpl @Inject constructor(
     private val auth: FirebaseAuth,
@@ -87,6 +88,18 @@ class MomentRepositoryImpl @Inject constructor(
             Result.success(base64)
         } catch (e: Exception) {
             Result.failure(e)
+        }
+    }
+    override suspend fun getAllMoments(): List<Moment> {
+        return try {
+            store.collection("moments")
+                .orderBy("timestamp", Query.Direction.DESCENDING)
+                .get()
+                .await()
+                .documents
+                .mapNotNull { it.toObject(Moment::class.java) }
+        } catch (e: Exception) {
+            emptyList()
         }
     }
 

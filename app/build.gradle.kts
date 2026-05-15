@@ -97,4 +97,8 @@ dependencies {
     implementation(libs.paging.runtime)
     implementation(libs.paging.compose)
 
+    // Map
+    implementation(libs.osmdroid)
+
+
 }
