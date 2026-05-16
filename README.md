@@ -226,9 +226,9 @@ The capture button is disabled until `initializationFuture` completes. This prev
 ## 🔮 Coming Features
 
 - [ ] **Unit tests** — ViewModel and Repository coverage with fake repositories
-- [ ] **Settings screen** — edit display name, change password, notification preferences
-- [ ] **Profile photo** — upload and display a profile picture
-- [ ] **Display name on sign up** — set a custom username when creating an account
+- [x] **Settings screen** — edit display name, change password, notification preferences
+- [x] **Profile photo** — upload and display a profile picture
+- [x] **Display name on sign up** — set a custom username when creating an account
 - [ ] **Likes** — like moments with real-time count updates via Firestore listeners
 - [ ] **Comments** — comment on moments with a collapsible bottom sheet
 - [ ] **Delete moment** — remove your own moments from feed and profile
