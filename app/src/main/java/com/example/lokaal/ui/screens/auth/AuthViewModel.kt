@@ -50,7 +50,7 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    fun signUp(email: String, password: String, confirm: String) {
+    fun signUp(email: String, password: String, confirm: String, displayName: String) {
         val emailError = validateEmail(email)
         if (emailError != null) { _signUpState.value = AuthUiState.Error(emailError); return }
         val passwordError = validatePassword(password)
@@ -60,7 +60,7 @@ class AuthViewModel @Inject constructor(
 
         viewModelScope.launch {
             _signUpState.value = AuthUiState.Loading
-            val result = repository.signUp(email, password)
+            val result = repository.signUp(email, password, displayName)
             _signUpState.value = result.fold(
                 onSuccess = { AuthUiState.Success },
                 onFailure = { AuthUiState.Error(it.toAuthMessage()) }

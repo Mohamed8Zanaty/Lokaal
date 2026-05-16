@@ -3,6 +3,7 @@ package com.example.lokaal.domain.model
 data class Moment(
     val id: String = "",
     val userId: String = "",
+    val userPhoto: String = "",
     val authorName: String = "",
     val caption: String = "",
     val photoBase64: String = "",

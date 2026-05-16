@@ -3,6 +3,7 @@ package com.example.lokaal.ui.screens.profile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.lokaal.domain.repository.MomentRepository
+import com.example.lokaal.domain.repository.UserProfileRepository
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -15,7 +16,8 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val auth: FirebaseAuth,
-    private val momentRepository: MomentRepository
+    private val momentRepository: MomentRepository,
+    private val userProfileRepository: UserProfileRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileUiState())
@@ -28,18 +30,17 @@ class ProfileViewModel @Inject constructor(
     private fun loadProfile() {
         val user = auth.currentUser ?: return
 
-        _uiState.update {
-            it.copy(
-                displayName = user.displayName ?: user.email?.substringBefore("@") ?: "User",
-                email = user.email ?: "",
-                isLoading = true
-            )
-        }
-
         viewModelScope.launch {
+            val profile = userProfileRepository.getUserProfile(user.uid)
             val moments = momentRepository.getUserMoments(user.uid)
             _uiState.update {
-                it.copy(moments = moments, isLoading = false)
+                it.copy(
+                    displayName = profile?.displayName ?: user.displayName ?: "",
+                    email = user.email ?: "",
+                    profilePhoto = profile?.photoBase64 ?: "",
+                    moments = moments,
+                    isLoading = false
+                )
             }
         }
     }

@@ -5,4 +5,5 @@ data class UserProfile(
     val displayName: String = "",
     val email: String = "",
     val momentsCount: Int = 0,
+    val photoBase64: String = ""
 )

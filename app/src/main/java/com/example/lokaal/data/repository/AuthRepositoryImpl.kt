@@ -4,6 +4,7 @@ import com.example.lokaal.domain.model.UserProfile
 import com.example.lokaal.domain.repository.AuthRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -17,7 +18,8 @@ class AuthRepositoryImpl @Inject constructor(
 ) : AuthRepository {
     override suspend fun signUp(
         email: String,
-        password: String
+        password: String,
+        displayName: String
     ): Result<FirebaseUser> {
         return try {
             val user = auth
@@ -29,6 +31,7 @@ class AuthRepositoryImpl @Inject constructor(
             val profile = UserProfile(
                 uid = user.uid,
                 email = email,
+                displayName = displayName
             )
 
             store
@@ -73,4 +76,22 @@ class AuthRepositoryImpl @Inject constructor(
             auth.removeAuthStateListener(listener)
         }
     }
+    override suspend fun updateDisplayName(name: String): Result<Unit> {
+        return try {
+            val user = auth.currentUser ?: return Result.failure(Exception("Not signed in"))
+            val profileUpdates = UserProfileChangeRequest.Builder()
+                .setDisplayName(name)
+                .build()
+            user.updateProfile(profileUpdates).await()
+
+            store.collection("users").document(user.uid)
+                .update("displayName", name)
+                .await()
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
 }

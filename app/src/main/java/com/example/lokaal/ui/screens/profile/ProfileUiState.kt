@@ -5,6 +5,7 @@ import com.example.lokaal.domain.model.Moment
 data class ProfileUiState(
     val displayName: String = "",
     val email: String = "",
+    val profilePhoto: String? = "",
     val moments: List<Moment> = emptyList(),
     val isLoading: Boolean = false,
     val isSignedOut: Boolean = false,

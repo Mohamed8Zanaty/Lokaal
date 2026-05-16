@@ -40,7 +40,8 @@ import kotlin.collections.forEach
 @Composable
 fun ProfileScreen(
     modifier: Modifier = Modifier,
-    viewModel: ProfileViewModel = hiltViewModel()
+    viewModel: ProfileViewModel = hiltViewModel(),
+    onSittingsClick: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -48,7 +49,8 @@ fun ProfileScreen(
         modifier = modifier,
         uiState = uiState,
         onRefresh = viewModel::refresh,
-        onSignOut = viewModel::signOut
+        onSignOut = viewModel::signOut,
+        onSittingsClick = onSittingsClick
     )
 }
 
@@ -57,7 +59,8 @@ fun ProfileContent(
     modifier: Modifier = Modifier,
     uiState: ProfileUiState,
     onRefresh: () -> Unit,
-    onSignOut: () -> Unit
+    onSignOut: () -> Unit,
+    onSittingsClick: () -> Unit
 ) {
     LazyColumn(
         modifier = modifier
@@ -71,10 +74,11 @@ fun ProfileContent(
                     .fillMaxWidth()
                     .background(MaterialTheme.colorScheme.primary)
             ) {
-                ProfileTopBar(onSettingsClick = { })
+                ProfileTopBar(onSettingsClick = onSittingsClick)
                 ProfileHeader(
                     displayName = uiState.displayName,
-                    email = uiState.email
+                    email = uiState.email,
+                    profilePhoto = uiState.profilePhoto ?: ""
                 )
                 StatsRow(momentsCount = uiState.momentsCount)
             }

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -17,15 +18,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.lokaal.utils.Base64Image
 
 @Composable
 fun ProfileHeader(
     displayName: String,
     email: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    profilePhoto: String,
 ) {
     Row(
         modifier = modifier
@@ -39,23 +43,24 @@ fun ProfileHeader(
         Box(
             modifier = Modifier
                 .size(60.dp)
-                .background(
-                    color = Color.White.copy(alpha = 0.2f),
-                    shape = CircleShape
-                )
-                .border(
-                    width = 2.dp,
-                    color = Color.White,
-                    shape = CircleShape
-                ),
+                .background(Color.White.copy(alpha = 0.2f), CircleShape)
+                .border(2.dp, Color.White, CircleShape),
             contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = displayName.take(1).uppercase(),
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Medium,
-                color = Color.White
-            )
+            if (profilePhoto.isNotBlank()) {
+                Base64Image(
+                    base64 = profilePhoto,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(CircleShape)
+                )
+            } else {
+                Text(
+                    text = displayName.take(1).uppercase(),
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = Color.White
+                )
+            }
         }
 
         Column {

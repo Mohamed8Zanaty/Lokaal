@@ -12,4 +12,5 @@ sealed interface Route : NavKey {
     @Serializable data object Camera : Route
     @Serializable data class CreateMoment(val photoUri: String) : Route
     @Serializable data object Profile : Route
+    @Serializable data object EditProfile : Route
 }

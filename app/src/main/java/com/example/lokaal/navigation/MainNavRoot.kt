@@ -13,17 +13,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
 import com.example.lokaal.R
 import com.example.lokaal.ui.screens.camera.CameraScreen
 import com.example.lokaal.ui.screens.createmoment.CreateMomentScreen
+import com.example.lokaal.ui.screens.editprofile.EditProfileScreen
 import com.example.lokaal.ui.screens.feed.FeedScreen
 import com.example.lokaal.ui.screens.map.MapScreen
 import com.example.lokaal.ui.screens.profile.ProfileScreen
+import com.example.lokaal.ui.screens.profile.ProfileViewModel
 
 @Composable
-fun MainNavRoot(modifier: Modifier = Modifier) {
+fun MainNavRoot(
+    modifier: Modifier = Modifier,
+    profileViewModel: ProfileViewModel = hiltViewModel(),
+) {
     val navigationState = rememberNavigationState(
         startRoute = Route.Feed,                      
         topLevelRoutes = TOP_LEVEL_DESTINATIONS.keys
@@ -75,7 +81,12 @@ fun MainNavRoot(modifier: Modifier = Modifier) {
                         MapScreen()
                     }
                     entry<Route.Profile> {
-                        ProfileScreen()
+                        ProfileScreen(
+                            viewModel = profileViewModel,
+                            onSittingsClick = {
+                                navigator.navigate(Route.EditProfile)
+                            }
+                        )
                     }
                     entry<Route.Camera> {
                         CameraScreen(
@@ -88,6 +99,14 @@ fun MainNavRoot(modifier: Modifier = Modifier) {
                         CreateMomentScreen(
                             photoBase64 = photoBase64,
                             onPostSuccess = { navigator.popToRoot(Route.Feed) }
+                        )
+                    }
+                    entry<Route.EditProfile> {
+                        EditProfileScreen(
+                            onSaved = {
+                                profileViewModel.refresh()
+                                navigator.goBack()
+                            }
                         )
                     }
                 }

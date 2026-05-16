@@ -61,9 +61,10 @@ fun SignUpScreen(
 fun SignUpContent(
     modifier: Modifier = Modifier,
     state: AuthUiState,
-    onSignUp: (email: String, password: String, confirm: String) -> Unit,
+    onSignUp: (email: String, password: String, confirm: String, displayName: String) -> Unit,
     onNavigateToSignIn: () -> Unit
 ) {
+    var displayName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirm by remember { mutableStateOf("") }
@@ -91,6 +92,16 @@ fun SignUpContent(
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
+                AuthTextField(
+                    value = displayName,
+                    onValueChange = { displayName = it },
+                    label = "Display name",
+                    placeholder = "How should we call you?",
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Next
+                    )
+                )
                 AuthTextField(
                     value = email,
                     onValueChange = { email = it },
@@ -136,7 +147,7 @@ fun SignUpContent(
                     )
                 }
                 Button(
-                    onClick = { onSignUp(email, password, confirm) },
+                    onClick = { onSignUp(email, password, confirm, displayName) },
                     enabled = state !is AuthUiState.Loading,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -185,7 +196,7 @@ private fun SignUpScreenIdlePreview() {
     LokaalTheme {
         SignUpContent(
             state = AuthUiState.Idle,
-            onSignUp = { _, _, _ -> },
+            onSignUp = { _, _, _, _ -> },
             onNavigateToSignIn = {}
         )
     }
