@@ -1,6 +1,6 @@
 package com.example.lokaal.ui.screens.camera
 
-import android.net.Uri
+import androidx.camera.view.LifecycleCameraController
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,12 +36,12 @@ import com.example.lokaal.ui.theme.LokaalTheme
 
 @Composable
 fun CameraScreen(
+    modifier: Modifier = Modifier,
+    viewModel: CameraViewModel = hiltViewModel(),
     onPhotoCaptured: (String) -> Unit,
-    modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-    val viewModel = hiltViewModel<CameraViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val locationName by viewModel.locationName.collectAsStateWithLifecycle()
     val controller = viewModel.cameraController.collectAsState().value
@@ -56,6 +56,29 @@ fun CameraScreen(
         }
     }
 
+    CameraContent(
+        modifier = modifier,
+        uiState = uiState,
+        controller = controller,
+        locationName = locationName,
+        onCapture = {
+            viewModel.capturePhoto(
+                context = context,
+                onSuccess = { },
+                onError = { }
+            )
+        }
+    )
+}
+
+@Composable
+fun CameraContent(
+    modifier: Modifier = Modifier,
+    uiState: CameraUiState,
+    controller: LifecycleCameraController?,
+    locationName: String,
+    onCapture: () -> Unit,
+) {
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -118,7 +141,7 @@ fun CameraScreen(
         when (uiState) {
             is CameraUiState.Error -> {
                 Text(
-                    text = (uiState as CameraUiState.Error).message,
+                    text = uiState.message,
                     color = Color.Red,
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
@@ -127,13 +150,7 @@ fun CameraScreen(
             }
             else -> {
                 CameraControls(
-                    onCapture = {
-                        viewModel.capturePhoto(
-                            context = context,
-                            onSuccess = { },
-                            onError = { }
-                        )
-                    },
+                    onCapture = onCapture,
                     onGallery = { /* TODO Open gallery */ },
                     onFlipCamera = { /* TODO Flip camera */ },
                     isCapturing = uiState is CameraUiState.CapturingPhoto,
@@ -149,8 +166,11 @@ fun CameraScreen(
 @Composable
 private fun CameraScreenPreview() {
     LokaalTheme {
-        CameraScreen(
-            onPhotoCaptured = {}
+        CameraContent(
+            uiState = CameraUiState.Ready,
+            controller = null,
+            locationName = "Cairo",
+            onCapture = {}
         )
     }
 }

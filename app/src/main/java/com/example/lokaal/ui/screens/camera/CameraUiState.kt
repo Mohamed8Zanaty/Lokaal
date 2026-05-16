@@ -1,7 +1,5 @@
 package com.example.lokaal.ui.screens.camera
 
-import android.net.Uri
-
 sealed interface CameraUiState {
     data object Initializing : CameraUiState
     data object Ready : CameraUiState

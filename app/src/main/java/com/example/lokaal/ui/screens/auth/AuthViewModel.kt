@@ -9,8 +9,10 @@ import com.example.lokaal.utils.validateEmail
 import com.example.lokaal.utils.validatePassword
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,7 +26,12 @@ class AuthViewModel @Inject constructor(
     private val _signUpState = MutableStateFlow<AuthUiState>(AuthUiState.Idle)
     val signUpState: StateFlow<AuthUiState> = _signUpState.asStateFlow()
 
-    val currentUser = repository.getCurrentUser()
+    val currentUser = repository.observeAuthState()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = repository.getCurrentUser()
+        )
 
     fun signIn(email: String, password: String) {
 

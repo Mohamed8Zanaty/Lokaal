@@ -12,13 +12,10 @@ import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
-import androidx.compose.runtime.collectAsState
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.CancellationTokenSource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -32,13 +29,13 @@ import java.io.File
 import java.util.Locale
 import javax.inject.Inject
 import androidx.core.graphics.scale
+import com.google.android.gms.location.Priority
 
 @HiltViewModel
 class CameraViewModel @Inject constructor() : ViewModel() {
     private val _uiState = MutableStateFlow<CameraUiState>(CameraUiState.Initializing)
     val uiState: StateFlow<CameraUiState> = _uiState.asStateFlow()
 
-    private var imageCapture: ImageCapture? = null
     private val _cameraController = MutableStateFlow<LifecycleCameraController?>(null)
     val cameraController = _cameraController.asStateFlow()
 
@@ -98,15 +95,12 @@ class CameraViewModel @Inject constructor() : ViewModel() {
             }
         )
     }
-    fun resetState() {
-        _uiState.value = CameraUiState.Ready
-    }
 
     @SuppressLint("MissingPermission")
     private fun fetchLocation(context: Context) {
         val fusedClient = LocationServices.getFusedLocationProviderClient(context)
         fusedClient.getCurrentLocation(
-            LocationRequest.PRIORITY_HIGH_ACCURACY,
+            Priority.PRIORITY_HIGH_ACCURACY,
             CancellationTokenSource().token
         ).addOnSuccessListener { location ->
             if (location != null) {
@@ -132,7 +126,7 @@ class CameraViewModel @Inject constructor() : ViewModel() {
                     }
                     Log.d("loc", _locationName.value)
                 }
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 _locationName.value = "Unknown location"
             }
         }

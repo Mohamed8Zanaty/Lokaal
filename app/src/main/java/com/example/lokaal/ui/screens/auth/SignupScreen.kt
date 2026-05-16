@@ -34,6 +34,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.lokaal.ui.screens.auth.components.AuthBackground
 import com.example.lokaal.ui.screens.auth.components.AuthLogo
 import com.example.lokaal.ui.screens.auth.components.AuthTextField
@@ -41,15 +43,30 @@ import com.example.lokaal.ui.theme.LokaalTheme
 
 @Composable
 fun SignUpScreen(
+    modifier: Modifier = Modifier,
+    onNavigateToSignIn: () -> Unit,
+) {
+    val viewModel : AuthViewModel = hiltViewModel()
+    val state by viewModel.signUpState.collectAsStateWithLifecycle()
+
+    SignUpContent(
+        modifier = modifier,
+        state = state,
+        onSignUp = viewModel::signUp,
+        onNavigateToSignIn = onNavigateToSignIn
+    )
+}
+
+@Composable
+fun SignUpContent(
+    modifier: Modifier = Modifier,
     state: AuthUiState,
     onSignUp: (email: String, password: String, confirm: String) -> Unit,
-    onNavigateToSignIn: () -> Unit,
-    modifier: Modifier = Modifier
+    onNavigateToSignIn: () -> Unit
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirm by remember { mutableStateOf("") }
-
     AuthBackground {
         Column(
             modifier = modifier
@@ -166,7 +183,7 @@ fun SignUpScreen(
 @Composable
 private fun SignUpScreenIdlePreview() {
     LokaalTheme {
-        SignUpScreen(
+        SignUpContent(
             state = AuthUiState.Idle,
             onSignUp = { _, _, _ -> },
             onNavigateToSignIn = {}
@@ -174,26 +191,3 @@ private fun SignUpScreenIdlePreview() {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-private fun SignUpScreenLoadingPreview() {
-    LokaalTheme {
-        SignUpScreen(
-            state = AuthUiState.Loading,
-            onSignUp = { _, _, _ -> },
-            onNavigateToSignIn = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun SignUpScreenErrorPreview() {
-    LokaalTheme {
-        SignUpScreen(
-            state = AuthUiState.Error("Passwords do not match"),
-            onSignUp = { _, _, _ -> },
-            onNavigateToSignIn = {}
-        )
-    }
-}

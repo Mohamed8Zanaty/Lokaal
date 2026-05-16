@@ -3,7 +3,6 @@ package com.example.lokaal.ui.screens.createmoment
 import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Geocoder
-import android.net.Uri
 import android.os.Build
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -18,7 +17,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.Locale
 import javax.inject.Inject
 
@@ -70,13 +68,13 @@ class CreateMomentViewModel @Inject constructor(
                         ?: "Unknown location"
                     _uiState.update { it.copy(locationName = name) }
                 }
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 _uiState.update { it.copy(locationName = "Unknown location") }
             }
         }
     }
 
-    fun postMoment(context: Context, photoBase64: String) {
+    fun postMoment(photoBase64: String) {
         val caption = _uiState.value.caption.trim()
         if (caption.isBlank()) {
             _uiState.update { it.copy(error = "Please add a caption") }

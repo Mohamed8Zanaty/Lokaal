@@ -34,6 +34,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.lokaal.ui.screens.auth.components.AuthBackground
 import com.example.lokaal.ui.screens.auth.components.AuthLogo
 import com.example.lokaal.ui.screens.auth.components.AuthTextField
@@ -41,14 +43,28 @@ import com.example.lokaal.ui.theme.LokaalTheme
 
 @Composable
 fun SignInScreen(
+    modifier: Modifier = Modifier,
+    viewModel: AuthViewModel = hiltViewModel(),
+    onNavigateToSignUp: () -> Unit
+) {
+    val state by viewModel.signInState.collectAsStateWithLifecycle()
+    SignInContent(
+        modifier = modifier,
+        state = state,
+        onSignIn = viewModel::signIn,
+        onNavigateToSignUp = onNavigateToSignUp
+    )
+}
+
+@Composable
+fun SignInContent(
+    modifier: Modifier = Modifier,
     state: AuthUiState,
     onSignIn: (email: String, password: String) -> Unit,
     onNavigateToSignUp: () -> Unit,
-    modifier: Modifier = Modifier
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-
     AuthBackground {
         Column(
             modifier = modifier
@@ -75,7 +91,9 @@ fun SignInScreen(
             ) {
                 AuthTextField(
                     value = email,
-                    onValueChange = { email = it },
+                    onValueChange = {
+                        email = it
+                    },
                     label = "Email",
                     placeholder = "you@email.com",
                     keyboardOptions = KeyboardOptions(
@@ -88,7 +106,9 @@ fun SignInScreen(
                 )
                 AuthTextField(
                     value = password,
-                    onValueChange = { password = it },
+                    onValueChange = {
+                        password = it
+                    },
                     label = "Password",
                     placeholder = "••••••••",
                     isPassword = true,
@@ -158,34 +178,10 @@ fun SignInScreen(
 @Composable
 private fun SignInScreenIdlePreview() {
     LokaalTheme {
-        SignInScreen(
+        SignInContent(
             state = AuthUiState.Idle,
             onSignIn = { _, _ -> },
-            onNavigateToSignUp = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun SignInScreenLoadingPreview() {
-    LokaalTheme {
-        SignInScreen(
-            state = AuthUiState.Loading,
-            onSignIn = { _, _ -> },
-            onNavigateToSignUp = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun SignInScreenErrorPreview() {
-    LokaalTheme {
-        SignInScreen(
-            state = AuthUiState.Error("Invalid email or password"),
-            onSignIn = { _, _ -> },
-            onNavigateToSignUp = {}
+            onNavigateToSignUp = {},
         )
     }
 }

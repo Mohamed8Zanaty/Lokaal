@@ -1,7 +1,5 @@
 package com.example.lokaal.ui.screens.auth
 
-import com.google.firebase.auth.FirebaseUser
-
 sealed interface AuthUiState {
     data object Idle : AuthUiState
     data object Loading : AuthUiState

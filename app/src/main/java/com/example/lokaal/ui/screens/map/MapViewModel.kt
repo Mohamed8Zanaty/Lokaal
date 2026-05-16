@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.lokaal.domain.model.Moment
 import com.example.lokaal.domain.repository.MomentRepository
 import com.google.android.gms.location.LocationServices
-import com.google.type.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow

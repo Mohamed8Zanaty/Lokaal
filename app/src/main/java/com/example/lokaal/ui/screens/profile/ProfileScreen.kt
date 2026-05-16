@@ -13,15 +13,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,19 +34,31 @@ import com.example.lokaal.ui.screens.profile.components.ProfileHeader
 import com.example.lokaal.ui.screens.profile.components.ProfileTopBar
 import com.example.lokaal.ui.screens.profile.components.SignOutButton
 import com.example.lokaal.ui.screens.profile.components.StatsRow
+import kotlin.collections.chunked
+import kotlin.collections.forEach
 
 @Composable
 fun ProfileScreen(
-    onSignOut: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: ProfileViewModel = hiltViewModel()
 ) {
-    val viewModel = hiltViewModel<ProfileViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(uiState.isSignedOut) {
-        if (uiState.isSignedOut) onSignOut()
-    }
+    ProfileContent(
+        modifier = modifier,
+        uiState = uiState,
+        onRefresh = viewModel::refresh,
+        onSignOut = viewModel::signOut
+    )
+}
 
+@Composable
+fun ProfileContent(
+    modifier: Modifier = Modifier,
+    uiState: ProfileUiState,
+    onRefresh: () -> Unit,
+    onSignOut: () -> Unit
+) {
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
@@ -89,7 +98,7 @@ fun ProfileScreen(
                 )
                 if (!uiState.isLoading) {
                     IconButton(
-                        onClick = viewModel::refresh,
+                        onClick = onRefresh,
                         modifier = Modifier.size(24.dp)
                     ) {
                         Icon(
@@ -177,7 +186,7 @@ fun ProfileScreen(
         // Sign out button
         item {
             SignOutButton(
-                onClick = viewModel::signOut,
+                onClick = onSignOut,
                 modifier = Modifier.padding(12.dp)
             )
         }

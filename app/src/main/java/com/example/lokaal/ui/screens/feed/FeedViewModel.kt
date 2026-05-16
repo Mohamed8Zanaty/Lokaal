@@ -13,13 +13,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FeedViewModel @Inject constructor(
-    private val repository: MomentRepository,
-    private val auth: FirebaseAuth
+    repository: MomentRepository,
 ) : ViewModel() {
     val moments: Flow<PagingData<Moment>> = repository
         .getMoments()
         .cachedIn(viewModelScope)
-
-    val currentUserId: String? = auth.currentUser?.uid
-    val currentUserName: String? = auth.currentUser?.displayName ?: auth.currentUser?.email
 }

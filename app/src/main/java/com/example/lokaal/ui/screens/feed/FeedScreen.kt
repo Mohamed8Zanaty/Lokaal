@@ -12,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.paging.LoadState
@@ -24,13 +25,27 @@ import com.example.lokaal.ui.screens.feed.components.ErrorItem
 import com.example.lokaal.ui.screens.feed.components.FeedTopBar
 import com.example.lokaal.ui.screens.feed.components.LoadingFooter
 import com.example.lokaal.ui.screens.feed.components.MomentCard
+import com.example.lokaal.ui.theme.LokaalTheme
+import kotlinx.coroutines.flow.flowOf
+import androidx.paging.PagingData
 
 @Composable
 fun FeedScreen(
-    moments: LazyPagingItems<Moment>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: FeedViewModel = hiltViewModel()
 ) {
+    val moments = viewModel.moments.collectAsLazyPagingItems()
+    FeedContent(
+        modifier = modifier,
+        moments = moments
+    )
+}
 
+@Composable
+fun FeedContent(
+    modifier: Modifier = Modifier,
+    moments: LazyPagingItems<Moment>
+) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -112,3 +127,29 @@ fun FeedScreen(
         }
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+private fun FeedContentPreview() {
+    val momentsList = listOf(
+        Moment(
+            id = "1",
+            authorName = "John Doe",
+            caption = "Exploring the hidden gems of the city!",
+            locationName = "Downtown, Cairo"
+        ),
+        Moment(
+            id = "2",
+            authorName = "Jane Smith",
+            caption = "Delicious street food you must try.",
+            locationName = "Zamalek, Cairo"
+        )
+    )
+    val momentsFlow = flowOf(PagingData.from(momentsList))
+    val lazyPagingItems = momentsFlow.collectAsLazyPagingItems()
+
+    LokaalTheme {
+        FeedContent(moments = lazyPagingItems)
+    }
+}
+
