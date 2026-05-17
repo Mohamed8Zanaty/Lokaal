@@ -13,6 +13,4 @@ data class Moment(
     val timestamp: Long = System.currentTimeMillis(),
     val likedBy: List<String> = emptyList(),
     val likesCount: Int = 0
-) {
-    fun isLikedBy(userId: String) = likedBy.contains(userId)
-}
+)
