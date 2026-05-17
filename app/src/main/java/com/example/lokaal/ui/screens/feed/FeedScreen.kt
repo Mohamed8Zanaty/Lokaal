@@ -44,7 +44,7 @@ fun FeedScreen(
 @Composable
 fun FeedContent(
     modifier: Modifier = Modifier,
-    moments: LazyPagingItems<Moment>
+    moments: LazyPagingItems<Moment>,
 ) {
     Column(
         modifier = modifier
@@ -104,6 +104,7 @@ fun FeedContent(
                         val moment = moments[index]
                         if (moment != null) {
                             MomentCard(moment = moment)
+
                         }
                     }
 
@@ -149,7 +150,7 @@ private fun FeedContentPreview() {
     val lazyPagingItems = momentsFlow.collectAsLazyPagingItems()
 
     LokaalTheme {
-        FeedContent(moments = lazyPagingItems)
+        FeedContent(moments = lazyPagingItems,)
     }
 }
 

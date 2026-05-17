@@ -37,9 +37,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.lokaal.R
 import com.example.lokaal.domain.model.Moment
+import com.example.lokaal.ui.screens.components.LikeButton
+import com.example.lokaal.ui.screens.viewmodel.MomentLikesViewModel
 import com.example.lokaal.utils.toRelativeTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -51,7 +54,18 @@ fun MomentCard(
 ) {
     var imageBitmap by remember { mutableStateOf<ImageBitmap?>(null) }
     var isLoading by remember { mutableStateOf(true) }
-
+    val likesViewModel = hiltViewModel<MomentLikesViewModel>(
+        key = moment.id
+    )
+    val likesCount by likesViewModel.likesCount.collectAsStateWithLifecycle()
+    val isLiked by likesViewModel.isLiked.collectAsStateWithLifecycle()
+    LaunchedEffect(moment.id) {
+        likesViewModel.observeLikes(
+            momentId = moment.id,
+            initialCount = moment.likesCount,
+            initialLikedBy = moment.likedBy
+        )
+    }
     LaunchedEffect(moment.photoBase64) {
         if (moment.photoBase64.isNotBlank()) {
             withContext(Dispatchers.IO) {
@@ -71,6 +85,28 @@ fun MomentCard(
             isLoading = false
         }
     }
+
+    MomentCardContent(
+        modifier = modifier,
+        isLoading = isLoading,
+        imageBitmap = imageBitmap,
+        moment = moment,
+        likesCount = likesCount,
+        isLiked = isLiked,
+        onToggleLike = { likesViewModel.toggleLike() }
+    )
+}
+
+@Composable
+fun MomentCardContent(
+    modifier: Modifier = Modifier,
+    isLoading: Boolean,
+    imageBitmap: ImageBitmap?,
+    moment: Moment,
+    onToggleLike: (String) -> Unit,
+    likesCount: Int,
+    isLiked: Boolean
+) {
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -92,7 +128,7 @@ fun MomentCard(
                     }
                     imageBitmap != null -> {
                         Image(
-                            bitmap = imageBitmap!!,
+                            bitmap = imageBitmap,
                             contentDescription = moment.caption,
                             contentScale = ContentScale.Crop,
                             modifier = Modifier.fillMaxSize()
@@ -188,9 +224,14 @@ fun MomentCard(
 
                 // Actions
                 Row(
+                    modifier = Modifier.padding(top = 4.dp),
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    ActionButton(icon = R.drawable.heart, label = "Like")
+                    LikeButton(
+                        likesCount = likesCount,
+                        isLiked = isLiked,
+                        onToggle = { onToggleLike(moment.id) }
+                    )
                     ActionButton(icon = R.drawable.comment, label = "Comment")
                     ActionButton(icon = R.drawable.share, label = "Share")
                 }

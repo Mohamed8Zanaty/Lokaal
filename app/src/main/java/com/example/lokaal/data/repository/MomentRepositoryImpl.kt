@@ -18,7 +18,10 @@ import androidx.core.graphics.scale
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Query
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.callbackFlow
 
 class MomentRepositoryImpl @Inject constructor(
     private val auth: FirebaseAuth,
@@ -99,4 +102,47 @@ class MomentRepositoryImpl @Inject constructor(
         }
     }
 
+    // Likes
+    override fun getMomentLikes(momentId: String): Flow<Pair<Int, List<String>>> = callbackFlow {
+        val listener = store
+            .collection("moments")
+            .document(momentId)
+            .addSnapshotListener { snapshot, exception ->
+                if(exception != null) {
+                    close(exception); return@addSnapshotListener
+                }
+                if(snapshot != null && snapshot.exists() ) {
+                    val likesCount = (snapshot.getLong("likesCount") ?: 0L ).toInt()
+                    val likedBy = snapshot.get("likedBy") as? List<*> ?: emptyList<String>()
+                    trySend(Pair(likesCount, likedBy.filterIsInstance<String>()))
+                }
+            }
+        awaitClose { listener.remove() }
+    }
+
+    override suspend fun setLike(
+        momentId: String,
+        userId: String,
+        liked: Boolean
+    ): Result<Unit> {
+        return  try {
+            val ref = store.collection("moments").document(momentId)
+            store.runTransaction { transaction ->
+                val snap = transaction.get(ref)
+                val likedBy = snap.get("likedBy") as? List<*> ?: emptyList<String>()
+                val currentlyLiked = likedBy.contains(userId)
+
+                if(liked && !currentlyLiked) {
+                    transaction.update(ref, "likedBy", FieldValue.arrayUnion(userId))
+                    transaction.update(ref, "likesCount", FieldValue.increment(1))
+                } else if (!liked && currentlyLiked ) {
+                    transaction.update(ref, "likedBy", FieldValue.arrayRemove(userId))
+                    transaction.update(ref, "likesCount", FieldValue.increment(-1))
+                }
+            }.await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

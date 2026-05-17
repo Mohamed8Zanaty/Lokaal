@@ -10,5 +10,9 @@ data class Moment(
     val latitude: Double = 0.0,
     val longitude: Double = 0.0,
     val locationName: String = "",
-    val timestamp: Long = System.currentTimeMillis()
-)
+    val timestamp: Long = System.currentTimeMillis(),
+    val likedBy: List<String> = emptyList(),
+    val likesCount: Int = 0
+) {
+    fun isLikedBy(userId: String) = likedBy.contains(userId)
+}

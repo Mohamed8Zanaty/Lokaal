@@ -12,4 +12,9 @@ interface MomentRepository {
     suspend fun getUserMoments(userId: String): List<Moment>
     fun photoToBase64(context: Context, uri: Uri): Result<String>
     suspend fun getAllMoments(): List<Moment>
+
+    // Likes
+    fun getMomentLikes(momentId: String): Flow<Pair<Int, List<String>>>
+    suspend fun setLike(momentId: String, userId: String, liked: Boolean): Result<Unit>
+
 }
